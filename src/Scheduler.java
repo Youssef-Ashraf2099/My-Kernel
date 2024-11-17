@@ -28,4 +28,16 @@ public class Scheduler {
             System.out.println("Completed Process ID: " + currentProcess.getProcessId());
         }
     }
+    public static void main(String[] args) {
+        Scheduler scheduler = new Scheduler(10); // Adjust max size as needed
+
+        // Adding sample processes
+        scheduler.addProcess(1, 5, 0); // Process ID 1, 5 units of execution time, arrival at 0
+        scheduler.addProcess(2, 3, 1);
+        scheduler.addProcess(3, 1, 2);
+        scheduler.addProcess(4, 4, 3);
+
+        // Run the scheduler
+        scheduler.run();
+    }
 }
