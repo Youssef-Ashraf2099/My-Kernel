@@ -2,7 +2,8 @@ import java.util.ArrayList;
 
 public class Scheduler {
     private PriorityQueue processQueue;
-
+   private static final int QUANTUM = 2;
+    
     public Scheduler(int maxSize) {
         processQueue = new PriorityQueue(maxSize);
     }
@@ -11,7 +12,10 @@ public class Scheduler {
         Process newProcess = new Process(processId, executionTime, arrivalTime);
         processQueue.insert(newProcess);
     }
-
+ public void addProcess(int processId, int executionTime, int arrivalTime) {
+        Process newProcess = new Process(processId, executionTime, arrivalTime);
+        processQueue.enque(newProcess);
+    }
     public void run() {
         while (!processQueue.isEmpty()) {
             Process currentProcess = (Process) processQueue.remove();
@@ -21,11 +25,17 @@ public class Scheduler {
             // Simulate process execution (e.g., sleeping for the execution time)
             try {
                 Thread.sleep(currentProcess.getExecutionTime() * 100); // Adjust scale as needed
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
                 System.out.println("Process execution interrupted.");
             }
-
-            System.out.println("Completed Process ID: " + currentProcess.getProcessId());
+            if (remainingTime > 0) {
+                currentProcess.setExecutionTime(remainingTime);
+                processQueue.add(currentProcess);
+               } 
+            else {
+                System.out.println("Completed Process ID: " + currentProcess.getProcessId());
+            }
         }
     }
     public static void main(String[] args) {
