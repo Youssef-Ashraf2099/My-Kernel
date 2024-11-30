@@ -12,10 +12,6 @@ public class Scheduler {
         Process newProcess = new Process(processId, executionTime, arrivalTime);
         processQueue.insert(newProcess);
     }
- public void addProcess(int processId, int executionTime, int arrivalTime) {
-        Process newProcess = new Process(processId, executionTime, arrivalTime);
-        processQueue.enque(newProcess);
-    }
     public void run() {
         while (!processQueue.isEmpty()) {
             Process currentProcess = (Process) processQueue.remove();
@@ -29,12 +25,16 @@ public class Scheduler {
             catch (InterruptedException e) {
                 System.out.println("Process execution interrupted.");
             }
-            if (remainingTime > 0) {
-                currentProcess.setExecutionTime(remainingTime);
-                processQueue.add(currentProcess);
-               } 
-            else {
+            if ( currentProcess.getExecutionTime()<=2 && currentProcess.getExecutionTime() > 0) {
                 System.out.println("Completed Process ID: " + currentProcess.getProcessId());
+                /* WE MIGHT WANT TO ADD A PRINT HERE*/
+            }
+            else if(currentProcess.getExecutionTime() <= 0){System.out.println("DEBUG PROBLEM WITH SCHEDULELR CLASS");
+                System.out.println("THE getExecutionTime is:"+currentProcess.getExecutionTime());}
+            else {
+                currentProcess.setExecutionTime((currentProcess.getExecutionTime()-2));
+                processQueue.insert(currentProcess);
+                //System.out.println("Completed Process ID: " + currentProcess.getProcessId());
             }
         }
     }
