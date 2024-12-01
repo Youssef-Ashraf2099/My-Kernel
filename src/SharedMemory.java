@@ -1,15 +1,17 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SharedMemory {
-    private Map<String, Integer> memory = new HashMap<>();
+    private ConcurrentHashMap<String, Integer> memory = new ConcurrentHashMap<>();
 
-    public synchronized void setVariable(String key, int value) {
+    public void setVariable(String key, int value) {
         memory.put(key, value);
-        System.out.println("Set " + key + " to " + value);
     }
 
-    public synchronized int getVariable(String key) {
+    public int getVariable(String key) {
         return memory.getOrDefault(key, 0);
+    }
+
+    public void printMemoryState() {
+        System.out.println("Memory State: " + memory);
     }
 }
