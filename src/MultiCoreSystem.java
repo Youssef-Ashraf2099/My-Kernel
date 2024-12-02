@@ -4,7 +4,7 @@ public class MultiCoreSystem {
     public static void main(String[] args) {
         MasterCore master = new MasterCore(2); // 2 slave cores
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("Program_1.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("C:/Users/ahmed/OneDrive/Desktop/GIU_2531_64_19383_2024-12-01T15_08_01/Project Modified/Program_2.txt"))) {
             List<String> instructions = new ArrayList<>();
             String line;
             while ((line = reader.readLine()) != null) {

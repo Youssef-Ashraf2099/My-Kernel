@@ -57,14 +57,14 @@ class SlaveCore extends Thread {
             case "assign":
                 if (parts[2].equals("input")) {
                     memory.setVariable(parts[1], (int) (Math.random() * 100));
-                } else if (isOperation(parts[2])) {
-                    int operand1 = resolveValue(parts[3]);
-                    int operand2 = resolveValue(parts[4]);
-                    int result = performOperation(parts[2], operand1, operand2);
+                }  if (parts.length>3&&isOperation(parts[3])) {
+                    int operand1 = resolveValue(parts[4]);
+                    int operand2 = resolveValue(parts[5]);
+                    int result = performOperation(parts[3], operand1, operand2);
                     memory.setVariable(parts[1], result);
-                } else {
+                }/* else {
                     memory.setVariable(parts[1], Integer.parseInt(parts[2]));
-                }
+                }*/
                 break;
             case "print":
                 System.out.println(parts[1] + ": " + memory.getVariable(parts[1]));
