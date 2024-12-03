@@ -6,7 +6,11 @@ public class MultiCoreSystem {
         MasterCore master = new MasterCore(2); // 2 slave cores
 
         // List of program files to read
-        String[] programFiles = {
+        String[] programFiles = {"C:\\Users\\ahmed\\OneDrive\\Desktop\\GIU_2531_64_19383_2024-12-01T15_08_01\\Project Modified\\Program_2.txt"
+                ,"src/Program_3.txt",
+                "src/Program_4.txt",
+                "C:\\Users\\ahmed\\OneDrive\\Desktop\\GIU_2531_64_19383_2024-12-01T15_08_01\\Project Modified\\Program_2.txt"
+                ,"src/Program_3.txt",
                 "src/Program_4.txt"
 
         };

@@ -59,10 +59,12 @@ class SlaveCore extends Thread {
                 process = null;// Mark process as completed
                 master.decrementActiveProcesses();
                 }
-                else{readyQueue.add(process);}
+                else{readyQueue.add(process);
+                    master.decrementActiveProcesses();
+                }
             }
                 try {
-                    Thread.sleep(1000); // Idle wait
+                    Thread.sleep(50); // Idle wait
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // Preserve interrupt status
                 }
