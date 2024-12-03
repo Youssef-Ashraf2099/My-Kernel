@@ -47,7 +47,7 @@ class MasterCore {
 
    public void waitForCompletion() {
         synchronized (this) {
-            while (activeProcesses > 0 || !readyQueue.isEmpty()) { //--------> check this
+            while (!ACTIVE.isEmpty() || !readyQueue.isEmpty()) { //--------> check this
                 try {
                     wait();
                 } catch (InterruptedException e) {

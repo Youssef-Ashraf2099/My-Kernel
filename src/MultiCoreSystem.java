@@ -7,7 +7,6 @@ public class MultiCoreSystem {
 
         // List of program files to read
         String[] programFiles = {
-                "src/Program_3.txt",
                 "src/Program_4.txt"
 
         };
@@ -29,7 +28,8 @@ public class MultiCoreSystem {
         //master.startACTIVE();
         master.startSlaves();
 
-        master.waitForCompletion(); // Wait for all processes to complete
+        master.waitForCompletion();
+        //System.out.println("dfsdjfksdkjfsfjndskfhdsfdsfhsd");// Wait for all processes to complete
         master.shutdown(); // Shut down threads after processing
     }
 }

@@ -10,7 +10,7 @@ class SlaveCore extends Thread {
     private PCB process;
     private boolean isRunning = true; // Flag to control the thread lifecycle
     private PriorityQueue<PCB> readyQueue;    // Shared ready queue reference
-    private Queue<PCB> ACTIVE;    // Shared ready queue reference
+    private Queue<PCB> ACTIVE;   // Shared ready queue reference
 
     public SlaveCore(SharedMemory memory, MasterCore master,int x) {
         this.memory = memory;
@@ -31,22 +31,22 @@ class SlaveCore extends Thread {
 
     @Override
     public void run() {
-        while (!readyQueue.isEmpty()||!ACTIVE.isEmpty()) {
+        while ((!readyQueue.isEmpty()||!ACTIVE.isEmpty())&&this.isRunning) {
             synchronized (ACTIVE) {
                 if (!readyQueue.isEmpty()&&ACTIVE.isEmpty()){master.startACTIVE();}
-                logger.info("SlaveCore " + this.number + "HERE");
+                System.out.println("SlaveCore " + this.number + "HERE");
                 if (!ACTIVE.isEmpty()) {
                     process = ACTIVE.poll();
                     master.incrementActiveProcesses(); // Track active processes
                     logger.info("SlaveCore " + this.number + " picked up a process.");
                 } else {
-                    logger.info("SlaveCore " + this.number + " found the ACTIVE empty.");
+                    System.out.println("SlaveCore " + this.number + " found the ACTIVE empty.");
                 }
             }
 
 
             if (process != null) {
-                logger.info("SlaveCore " + this.number + " processing PCB with ID: " + process.processId);
+                System.out.println("SlaveCore " + this.number + " processing PCB with ID: " + process.processId);
                 int c=0;
                 while (process.hasNextInstruction()&&c<2) {
                     String instruction = process.getNextInstruction();
@@ -67,7 +67,7 @@ class SlaveCore extends Thread {
                     Thread.currentThread().interrupt(); // Preserve interrupt status
                 }
         }
-        logger.info("SlaveCore " + this.number + " shutting down.");
+        System.out.println("SlaveCore " + this.number + " shutting down.");
     }
 
     private void executeInstruction(String instruction) {
