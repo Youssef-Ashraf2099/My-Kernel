@@ -47,21 +47,25 @@ class SlaveCore extends Thread {
 
             if (process != null) {
                 System.out.println("SlaveCore " + this.number + " processing PCB with ID: " + process.processId);
-                int c=0;
-                while (process.hasNextInstruction()&&c<2) {
+                int Quantum=0;
+                while (process.hasNextInstruction()&&Quantum<2) {
                     String instruction = process.getNextInstruction();
                     logger.info("SlaveCore " + this.number + " executing instruction: " + instruction);
                     executeInstruction(instruction);
                     memory.printMemoryState();
-                    c++;// Print memory state after each instruction
+                    Quantum++;// Print memory state after each instruction
                 }
-                if(process.programCounter>=process.instructions.length){
-                process = null;// Mark process as completed
+                if(process.hasNextInstruction()){
+                    synchronized (readyQueue) {  //synchronized the use for safety as we did in active
+                        readyQueue.add(process);
+                        logger.info("SlaveCore " + this.number + " moved process back to readyQueue.");
+                        //just trying to be mostafa in myself added a logger
+                    }
+                }
+                else{
+                    process = null; // Mark process as completed
+                }
                 master.decrementActiveProcesses();
-                }
-                else{readyQueue.add(process);
-                    master.decrementActiveProcesses();
-                }
             }
                 try {
                     Thread.sleep(50); // Idle wait
