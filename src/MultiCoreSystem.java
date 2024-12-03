@@ -3,16 +3,15 @@ import java.util.*;
 
 public class MultiCoreSystem {
     public static void main(String[] args) {
-        MasterCore master = new MasterCore(2); // 2 slave cores
+        MasterCore master = new MasterCore(2);
 
-        // List of program files to read
-        String[] programFiles = {"C:\\Users\\ahmed\\OneDrive\\Desktop\\GIU_2531_64_19383_2024-12-01T15_08_01\\Project Modified\\Program_2.txt"
-                ,"src/Program_3.txt",
-                "src/Program_4.txt",
-                "C:\\Users\\ahmed\\OneDrive\\Desktop\\GIU_2531_64_19383_2024-12-01T15_08_01\\Project Modified\\Program_2.txt"
-                ,"src/Program_3.txt",
-                "src/Program_4.txt"
-
+        String[] programFiles = {
+                "Program_1.txt",
+                "Program_3.txt",
+                "Program_4.txt",
+                "Program_2.txt",
+                "Program_3.txt",
+                "Program_4.txt"
         };
 
         for (int i = 0; i < programFiles.length; i++) {
@@ -29,11 +28,9 @@ public class MultiCoreSystem {
                 e.printStackTrace();
             }
         }
-        //master.startACTIVE();
-        master.startSlaves();
 
+        master.startSlaves();
         master.waitForCompletion();
-        //System.out.println("dfsdjfksdkjfsfjndskfhdsfdsfhsd");// Wait for all processes to complete
-        master.shutdown(); // Shut down threads after processing
+        master.shutdown();
     }
 }

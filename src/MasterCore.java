@@ -3,34 +3,35 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 class MasterCore {
-    private PriorityQueue<PCB> readyQueue = new PriorityQueue<>();// make it a priority queue
+    private PriorityQueue<PCB> readyQueue = new PriorityQueue<>();
     private SlaveCore[] slaveCores;
     private SharedMemory memory;
     private int activeProcesses = 0;
-    private Queue<PCB> ACTIVE = new LinkedList<>();// make it a priority queue
-
+    private Queue<PCB> activeQueue = new LinkedList<>();
 
     public MasterCore(int numCores) {
         memory = new SharedMemory();
         slaveCores = new SlaveCore[numCores];
         for (int i = 0; i < numCores; i++) {
-            slaveCores[i] = new SlaveCore(memory, this,i);
+            slaveCores[i] = new SlaveCore(memory, this, i);
             slaveCores[i].setReadyQueue(readyQueue);
-            slaveCores[i].setACTIVEQueue(ACTIVE);// Set shared ready queue
+            slaveCores[i].setActiveQueue(activeQueue);
         }
     }
+
     public synchronized void startSlaves() {
-        for (int i = 0; i < 2; i++) {
-            slaveCores[i].start();
+        for (SlaveCore core : slaveCores) {
+            core.start();
         }
     }
 
     public synchronized void addProcess(PCB process) {
         readyQueue.add(process);
     }
-    public synchronized void startACTIVE() {
-        while(!readyQueue.isEmpty()){
-            ACTIVE.add(readyQueue.poll());
+
+    public synchronized void startActiveQueue() {
+        while (!readyQueue.isEmpty()) {
+            activeQueue.add(readyQueue.poll());
         }
     }
 
@@ -40,14 +41,14 @@ class MasterCore {
 
     public synchronized void decrementActiveProcesses() {
         activeProcesses--;
-        if (activeProcesses == 0 && readyQueue.isEmpty()&&ACTIVE.isEmpty()) {
+        if (activeProcesses == 0 && readyQueue.isEmpty() && activeQueue.isEmpty()) {
             notifyAll();
         }
     }
 
-   public void waitForCompletion() {
+    public void waitForCompletion() {
         synchronized (this) {
-            while (!ACTIVE.isEmpty() || !readyQueue.isEmpty()) { //--------> check this
+            while (!activeQueue.isEmpty() || !readyQueue.isEmpty()) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -71,4 +72,3 @@ class MasterCore {
         System.out.println("MasterCore shutting down.");
     }
 }
-

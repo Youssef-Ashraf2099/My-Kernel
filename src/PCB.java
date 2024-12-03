@@ -1,6 +1,6 @@
-public class PCB implements Comparable<PCB>{
+public class PCB implements Comparable<PCB> {
     int processId;
-    int programCounter; // Tracks current instruction
+    int programCounter;
     String[] instructions;
 
     public PCB(int processId, String[] instructions) {
@@ -19,9 +19,8 @@ public class PCB implements Comparable<PCB>{
 
     @Override
     public int compareTo(PCB o) {
-        int burst1 =this.instructions.length-this.programCounter;
-        int burst2 =o.instructions.length-o.programCounter;
-      return burst1-burst2;
+        int burst1 = this.instructions.length - this.programCounter;
+        int burst2 = o.instructions.length - o.programCounter;
+        return burst1 - burst2;
     }
 }
-
