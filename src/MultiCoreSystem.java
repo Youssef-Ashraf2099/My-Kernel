@@ -7,8 +7,6 @@ public class MultiCoreSystem {
 
         String[] programFiles = {
                 "Program_1.txt",
-                "Program_3.txt",
-                "Program_4.txt",
                 "Program_2.txt",
                 "Program_3.txt",
                 "Program_4.txt"
