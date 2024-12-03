@@ -1,19 +1,28 @@
+import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 class SlaveCore extends Thread {
+    int number=0;
+    private static final Logger logger = Logger.getLogger(SlaveCore.class.getName());
     private SharedMemory memory;
     private MasterCore master;
     private PCB process;
     private boolean isRunning = true; // Flag to control the thread lifecycle
-    private Queue<PCB> readyQueue;    // Shared ready queue reference
+    private PriorityQueue<PCB> readyQueue;    // Shared ready queue reference
+    private Queue<PCB> ACTIVE;    // Shared ready queue reference
 
-    public SlaveCore(SharedMemory memory, MasterCore master) {
+    public SlaveCore(SharedMemory memory, MasterCore master,int x) {
         this.memory = memory;
         this.master = master;
+        number=x;
     }
 
-    public void setReadyQueue(Queue<PCB> readyQueue) {
+    public void setReadyQueue(PriorityQueue<PCB> readyQueue) {
         this.readyQueue = readyQueue; // Assign shared ready queue
+    }
+    public void setACTIVEQueue(Queue<PCB> A) {
+        this.ACTIVE = A; // Assign shared ready queue
     }
 
     public void shutdown() {
@@ -22,33 +31,43 @@ class SlaveCore extends Thread {
 
     @Override
     public void run() {
-        while (isRunning) {
-            synchronized (readyQueue) {
-                if (!readyQueue.isEmpty()) {
-                    process = readyQueue.poll();
+        while (!readyQueue.isEmpty()||!ACTIVE.isEmpty()) {
+            synchronized (ACTIVE) {
+                if (!readyQueue.isEmpty()&&ACTIVE.isEmpty()){master.startACTIVE();}
+                logger.info("SlaveCore " + this.number + "HERE");
+                if (!ACTIVE.isEmpty()) {
+                    process = ACTIVE.poll();
                     master.incrementActiveProcesses(); // Track active processes
+                    logger.info("SlaveCore " + this.number + " picked up a process.");
+                } else {
+                    logger.info("SlaveCore " + this.number + " found the ACTIVE empty.");
                 }
             }
 
+
             if (process != null) {
-                System.out.println("Processing PCB with ID: " + process.processId);
-                while (process.hasNextInstruction()) {
+                logger.info("SlaveCore " + this.number + " processing PCB with ID: " + process.processId);
+                int c=0;
+                while (process.hasNextInstruction()&&c<2) {
                     String instruction = process.getNextInstruction();
-                    System.out.println("Executing instruction: " + instruction);
+                    logger.info("SlaveCore " + this.number + " executing instruction: " + instruction);
                     executeInstruction(instruction);
-                    memory.printMemoryState(); // Print memory state after each instruction
+                    memory.printMemoryState();
+                    c++;// Print memory state after each instruction
                 }
-                process = null;
-                master.decrementActiveProcesses(); // Mark process as completed
-            } else {
+                if(process.programCounter>=process.instructions.length){
+                process = null;// Mark process as completed
+                master.decrementActiveProcesses();
+                }
+                else{readyQueue.add(process);}
+            }
                 try {
-                    Thread.sleep(50); // Idle wait
+                    Thread.sleep(1000); // Idle wait
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // Preserve interrupt status
                 }
-            }
         }
-        System.out.println("SlaveCore shutting down.");
+        logger.info("SlaveCore " + this.number + " shutting down.");
     }
 
     private void executeInstruction(String instruction) {
@@ -111,5 +130,6 @@ class SlaveCore extends Thread {
                 throw new IllegalArgumentException("Unknown operation: " + operation);
         }
     }
+
 }
 

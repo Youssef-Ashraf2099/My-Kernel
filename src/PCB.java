@@ -1,4 +1,4 @@
-public class PCB {
+public class PCB implements Comparable<PCB>{
     int processId;
     int programCounter; // Tracks current instruction
     String[] instructions;
@@ -15,6 +15,13 @@ public class PCB {
 
     public String getNextInstruction() {
         return hasNextInstruction() ? instructions[programCounter++] : null;
+    }
+
+    @Override
+    public int compareTo(PCB o) {
+        int burst1 =this.instructions.length-this.programCounter;
+        int burst2 =o.instructions.length-o.programCounter;
+      return burst1-burst2;
     }
 }
 

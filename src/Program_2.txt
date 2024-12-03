@@ -1,0 +1,8 @@
+assign a input
+assign b input
+assign c input subtract a b
+print c
+assign c input multiply a b
+print c
+assign z input divide c a
+print z

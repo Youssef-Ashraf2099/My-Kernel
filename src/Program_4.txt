@@ -1,0 +1,3 @@
+assign x input
+assign y input
+print y
