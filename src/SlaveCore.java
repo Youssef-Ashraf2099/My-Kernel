@@ -77,7 +77,7 @@ class SlaveCore extends Thread {
         switch (parts[0]) {
             case "assign":
                 if (parts[2].equals("input")) {
-                    memory.setVariable(parts[1], (int) (Math.random() * 100));
+                    memory.setVariable(parts[1], (int) (Math.random() * 100)+1);
                 }  if (parts.length>3&&isOperation(parts[3])) {
                     int operand1 = resolveValue(parts[4]);
                     int operand2 = resolveValue(parts[5]);
