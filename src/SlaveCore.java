@@ -35,24 +35,24 @@ class SlaveCore extends Thread {
                 if (!readyQueue.isEmpty() && activeQueue.isEmpty()) {
                     master.startActiveQueue();
                 }
-                System.out.println("SlaveCore " + id + " HERE");
+                //System.out.println("SlaveCore " + id + " HERE");
                 if (!activeQueue.isEmpty()) {
                     process = activeQueue.poll();
                     if (process != null) {
                         master.incrementActiveProcesses();
                     }
-                    System.out.println("SlaveCore " + id + " picked up a process.");
-                } else {//Unreachable code
+                    //System.out.println("SlaveCore " + id + " picked up a process.");
+                } else {
                     System.out.println("SlaveCore " + id + " found the activeQueue empty.");
-                }//
+                }
             }
 
             if (process != null) {
-                System.out.println("SlaveCore " + id + " processing PCB with ID: " + process.processId);
+                //System.out.println("SlaveCore " + id + " processing PCB with ID: " + process.processId);
                 int quantum = 0;
                 while (process.hasNextInstruction() && quantum < 2) {
                     String instruction = process.getNextInstruction();
-                    System.out.println("SlaveCore " + id + " executing instruction: " + instruction);
+                    System.out.println("SlaveCore " + id +  " processing PCB with ID: " + process.processId + " executing instruction: " + instruction);
                     executeInstruction(instruction);
                     memory.printMemoryState();
                     quantum++;
@@ -60,12 +60,14 @@ class SlaveCore extends Thread {
                 if (process.hasNextInstruction()) {
                     synchronized (readyQueue) {
                         readyQueue.add(process);
-                        System.out.println("SlaveCore " + id + " moved process back to readyQueue.");
+                        System.out.println("SlaveCore " + id + " moved process into waiting queue.");
                     }
                 }
                 master.decrementActiveProcesses();
                 process = null;
             }
+
+            printQueueStates();
 
             try {
                 Thread.sleep(50);
@@ -76,22 +78,35 @@ class SlaveCore extends Thread {
         System.out.println("SlaveCore " + id + " shutting down.");
     }
 
+    private void printQueueStates() {
+        synchronized (readyQueue) {
+            System.out.println("SlaveCore " + id + " Queue States:");
+            System.out.println("Running Queue: " + activeQueue);
+            System.out.println("Waiting Queue: " + readyQueue);
+        }
+    }
+
     private void executeInstruction(String instruction) {
         String[] parts = instruction.split(" ");
         switch (parts[0]) {
             case "assign":
                 if (parts[2].equals("input")) {
-                    memory.setVariable(parts[1], (int) (Math.random() * 100) + 1);
+                    if (parts.length > 3 && isOperation(parts[3])) {
+                        int operand1 = resolveValue(parts[4]);
+                        int operand2 = resolveValue(parts[5]);
+                        int result = performOperation(parts[3], operand1, operand2);
+                        memory.setVariable(process.base, process.limit, parts[1], result);
+                    }
+                    else{
+                        memory.setVariable(process.base, process.limit, parts[1], (int) (Math.random() * 100) + 1);
+                    }
                 }
-                if (parts.length > 3 && isOperation(parts[3])) {
-                    int operand1 = resolveValue(parts[4]);
-                    int operand2 = resolveValue(parts[5]);
-                    int result = performOperation(parts[3], operand1, operand2);
-                    memory.setVariable(parts[1], result);
+                else{
+                    memory.setVariable(process.base, process.limit, parts[1], resolveValue(parts[2]));
                 }
                 break;
             case "print":
-                System.out.println(parts[1] + ": " + memory.getVariable(parts[1]));
+                System.out.println(parts[1] + ": " + memory.getVariable(process.base, process.limit, parts[1]));
                 break;
             default:
                 System.out.println("Unknown Instruction: " + instruction);
@@ -102,7 +117,7 @@ class SlaveCore extends Thread {
         if (isNumeric(operand)) {
             return Integer.parseInt(operand);
         } else {
-            return memory.getVariable(operand);
+            return memory.getVariable(process.base, process.limit, operand);
         }
     }
 

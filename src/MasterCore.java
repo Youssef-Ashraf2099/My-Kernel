@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -9,8 +10,9 @@ class MasterCore {
     private int activeProcesses = 0;
     private Queue<PCB> activeQueue = new LinkedList<>();
 
-    public MasterCore(int numCores) {
-        memory = new SharedMemory();
+    public MasterCore(int numCores, int memorySize, List<PCB> pcbs) {
+        memory = new SharedMemory(memorySize);
+        memory.setPCBs(pcbs);
         slaveCores = new SlaveCore[numCores];
         for (int i = 0; i < numCores; i++) {
             slaveCores[i] = new SlaveCore(memory, this, i);
