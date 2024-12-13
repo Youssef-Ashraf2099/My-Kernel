@@ -80,7 +80,7 @@ class SlaveCore extends Thread {
 
     private void printQueueStates() {
         synchronized (readyQueue) {
-            System.out.println("SlaveCore " + id + " Queue States:");
+            System.out.println("Queue States:");
             System.out.println("Running Queue: " + activeQueue);
             System.out.println("Waiting Queue: " + readyQueue);
         }
